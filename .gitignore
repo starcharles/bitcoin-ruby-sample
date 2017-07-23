@@ -1,0 +1,9 @@
+.bundle/
+.env
+.idea/
+vendor/
+.pryrc
+bitcoin-ruby/
+cache.db
+regtest.db
+doc/
