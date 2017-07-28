@@ -1,6 +1,3 @@
-#lib = File.expand_path('../vendor', __FILE__)
-#$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
 require 'bitcoin'
 require 'openassets'
 require 'dotenv'
@@ -31,6 +28,13 @@ Bitcoin.network = :regtest
 sender = 'mmEAxswu8V7LdUEvxy23Gv6iCZPxiAUB9i'
 recipient = 'mp9SVNVpuiNau8p1t5oWZ3dzM6Ap5t7G64'
 
+# アカウントにあるBTC
+total_btc = 1*100_000_000
+# 単位satoshiで送金額を設定
+send_amount = 1*100_000_000
+# 送金手数料
+tx_fee = 0.001*100_000_000
+
 priv_key = api.provider.dumpprivkey(sender)
 
 # Keyオブジェクトに変換
@@ -49,14 +53,17 @@ tx_bldr.input do |i|
 end
 
 tx_bldr.output do |o|
-  o.value 10000000 # 1 BTC in satoshis
+  o.value send_amount 
   o.script {|s| s.recipient recipient }
 end
 
-tx_bldr.tx
-#binding.pry
+tx_bldr.output do |o|
+  o.value total_btc - tx_fee 
+  o.to sender
+end
 
-btc_spend = 1
-btc_fee = 0.0001
-btc_payback = amount - btc_spend - btc_fee
+serialized_tx = tx_bldr.tx.to_payload.bth
 
+result = api.provider.sendrawtransaction(serialized_tx)
+
+puts result
