@@ -22,3 +22,5 @@ RPC_PASS=password
 ```
 
 
+1. start bitcoind in rpc mode
+2. run test_pay.rb
